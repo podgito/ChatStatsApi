@@ -113,7 +113,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="AzureStorage\AzureTableStorageClient.cs" />
     <Compile Include="Controllers\DataUploadController.cs" />
-    <Compile Include="Controllers\MessageEntryTableEntity.cs" />
+    <Compile Include="Models\MessageEntryTableEntity.cs" />
     <Compile Include="Controllers\WordsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
