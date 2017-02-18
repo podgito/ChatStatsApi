@@ -10,6 +10,7 @@ namespace ChatStatsApi.App_Start
 
     using Ninject;
     using Ninject.Web.Common;
+    using Pojito.Azure.Storage.Table;
 
     public static class NinjectWebCommon 
     {
@@ -61,6 +62,11 @@ namespace ChatStatsApi.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
+            //var connectionString = "DefaultEndpointsProtocol=https;AccountName=sachatdata;AccountKey=AgG/k5DWKBIV3ZpMlnFc/wy8ZimhGhJirufXoyD0EXYZA/9giZSzXCLX1w/+qR7l/FEIWRHB5HK5VbxmqArwfg==;";
+            var connectionString = "UseDevelopmentStorage=true";
+            kernel.Bind<StorageFactory>().To<StorageFactory>()
+                .WithConstructorArgument("connectionString", connectionString);
+
         }        
     }
 }

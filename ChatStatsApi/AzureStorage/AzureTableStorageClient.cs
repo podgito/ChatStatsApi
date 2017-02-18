@@ -11,7 +11,7 @@ namespace Pojito.Azure.Storage.Table
         private readonly CloudStorageAccount storageAccount;
         private readonly string tableName;
 
-        internal TableStorageClient(CloudStorageAccount storageAccount, string tableName)
+        public TableStorageClient(CloudStorageAccount storageAccount, string tableName)
         {
             this.storageAccount = storageAccount;
             this.tableName = tableName;
@@ -51,18 +51,68 @@ namespace Pojito.Azure.Storage.Table
             CloudTable table = GetTable();
 
             // Create the batch operation.
-            TableBatchOperation batchOperation = new TableBatchOperation();
 
-            var count = 0;
-            foreach (var item in items.Skip(count).Take(100))
+            foreach (var partition in items.GroupBy(i => i.PartitionKey))
             {
-                batchOperation.Insert(item);
+                var count = 0;
 
-                count += 100;
+                while (count < partition.Count())
+                {
+                    TableBatchOperation batchOperation = new TableBatchOperation();
+                    foreach (var item in partition.Skip(count).Take(100))
+                    {
+                        batchOperation.Insert(item);
+                        count += 100;
+                    }
+                    try
+                    {
+                        table.ExecuteBatch(batchOperation);
+                    }
+                    catch (Exception e)
+                    {
+
+                        throw;
+                    }
+                }
+
+
+
             }
 
+
             // Execute the batch operation.
-            table.ExecuteBatch(batchOperation);
+        }
+
+        public void InsertOrUpdate(params T[] items)
+        {
+            // Create the CloudTable object that represents the "people" table.
+            CloudTable table = GetTable();
+
+            // Create the batch operation.
+
+            foreach (var partition in items.GroupBy(i => i.PartitionKey))
+            {
+                var count = 0;
+
+                while (count < partition.Count())
+                {
+                    TableBatchOperation batchOperation = new TableBatchOperation();
+                    foreach (var item in partition.Skip(count).Take(100))
+                    {
+                        batchOperation.InsertOrMerge(item);
+                        count += 100;
+                    }
+                    try
+                    {
+                        table.ExecuteBatch(batchOperation);
+                    }
+                    catch (Exception e)
+                    {
+
+                        throw;
+                    }
+                }
+            }
         }
 
         public void Insert(T item)
@@ -72,7 +122,34 @@ namespace Pojito.Azure.Storage.Table
             TableOperation insertOperation = TableOperation.Insert(item);
 
             // Execute the insert operation.
-            table.Execute(insertOperation);
+            try
+            {
+                table.Execute(insertOperation);
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
         }
+    }
+
+    public class StorageFactory
+    {
+        private readonly string connectionString;
+
+        public StorageFactory(string connectionString)
+        {
+            this.connectionString = connectionString;
+        }
+
+        public TableStorageClient<T> CreateTableStorageClient<T>(string tableName) where T : ITableEntity, new()
+        {
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
+
+            return new TableStorageClient<T>(storageAccount, tableName);
+
+        }
+
     }
 }

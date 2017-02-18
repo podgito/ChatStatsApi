@@ -18,14 +18,14 @@ namespace ChatStatsApi.Controllers
     public class DataUploadController : ApiController
     {
         private const string RegularMessageType = "REGULAR_CHAT_MESSAGE";
-        private readonly TableStorageClient<MessageEntryTableEntity> tableStorageClient;
+        private readonly StorageFactory storageFactory;
 
-        public DataUploadController(TableStorageClient<MessageEntryTableEntity> tableStorageClient)
+        public DataUploadController(StorageFactory storageFactory)
         {
-            this.tableStorageClient = tableStorageClient;
+            this.storageFactory = storageFactory;
         }
 
-        public IHttpActionResult Hangouts(HttpPostedFileBase file)
+        private IHttpActionResult Hangouts(HttpPostedFileBase file)
         {
             //Store the data in table storage
             if (file != null && file.ContentLength > 0)
@@ -40,8 +40,10 @@ namespace ChatStatsApi.Controllers
                 csvReader.Close();
                 csvReader.Dispose();
 
-                tableStorageClient.Insert(regularMessages.ToArray());
-                tableStorageClient.Insert(otherMessages.ToArray());
+                var messagesTableClient = storageFactory.CreateTableStorageClient<MessageEntryTableEntity>("regularmessages");
+
+                messagesTableClient.InsertOrUpdate(regularMessages.ToArray());
+                //tableStorageClient.Insert(otherMessages.ToArray());
 
             }
 
@@ -49,6 +51,41 @@ namespace ChatStatsApi.Controllers
 
             return Ok();
 
+        }
+
+        public async Task<IHttpActionResult> Hangouts()
+        {
+            // Check if the request contains multipart/form-data.
+            if (!Request.Content.IsMimeMultipartContent())
+            {
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+            }
+
+            var provider = new MultipartMemoryStreamProvider();
+            await Request.Content.ReadAsMultipartAsync(provider);
+
+            foreach (var file in provider.Contents)
+            {
+                var filename = file.Headers.ContentDisposition.FileName.Trim('\"');
+                var buffer = await file.ReadAsStreamAsync();
+
+                var csvReader = new StreamReader(buffer);
+
+                csvReader.ReadLine(); //read the header
+                var regularMessages = new List<MessageEntryTableEntity>();
+                var otherMessages = new List<MessageEntryTableEntity>();
+                ReadMessages(csvReader, regularMessages, otherMessages);
+
+                csvReader.Close();
+                csvReader.Dispose();
+                //Do whatever you want with filename and its binaray data.
+
+                var messagesTableClient = storageFactory.CreateTableStorageClient<MessageEntryTableEntity>("RegularMessage");
+
+                messagesTableClient.InsertOrUpdate(regularMessages.ToArray());
+            }
+
+            return Ok();
         }
 
         private static void ReadMessages(StreamReader csvReader, List<MessageEntryTableEntity> regularMessages, List<MessageEntryTableEntity> otherMessages)
@@ -69,9 +106,9 @@ namespace ChatStatsApi.Controllers
                         otherMessages.Add(message);
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    //throw;
+                    Console.WriteLine(e);
                 }
             }
         }
