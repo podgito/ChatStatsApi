@@ -1,33 +1,35 @@
-﻿using ChatStatsApi.Models;
-using Pojito.Azure.Storage.Table;
+﻿using ChatStatsApi.AzureStorage;
+using ChatStatsApi.Models;
 using System;
+using System.Web.Http;
+using ChatStatsApi.Extensions;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 
 namespace ChatStatsApi.Controllers
 {
     [RoutePrefix("api/word")]
     public class WordsController : ApiController
     {
-        private readonly StorageFactory storageFactory;
+        private readonly IMessageRepository messageRepository;
 
-        public WordsController(StorageFactory storageFactory)
+        public WordsController(IMessageRepository messageRepository)
         {
-            this.storageFactory = storageFactory;
+            this.messageRepository = messageRepository;
         }
 
         [Route("{word}/count/monthly")]
-        public WordCloudModel GetMonthlyCountsForWord(string word)
+        public IEnumerable<MessageIntervalCounts> GetMonthlyCountsForWord(string word)
         {
-            var repo = storageFactory.CreateTableStorageClient<MessageEntryTableEntity>(MessageEntryTableEntity.MessageTableName);
+            var wordMessages = messageRepository.GetMessagesContainingWord(word);
 
-            var messages = repo.GetMessages(); 
+            var groupedMessages = wordMessages.GroupByMonth();
 
-            throw new NotImplementedException();
+            return groupedMessages.Select(c => new MessageIntervalCounts { Date = c.Key, Count = c.Count() });
         }
 
+        //Wordcloud
+
+        //Weekly/monthly counts of individual words
     }
 }

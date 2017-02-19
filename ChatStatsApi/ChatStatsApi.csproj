@@ -142,6 +142,8 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="AzureStorage\AzureTableStorageClient.cs" />
+    <Compile Include="AzureStorage\IMessageRepository.cs" />
+    <Compile Include="AzureStorage\MessageRepository.cs" />
     <Compile Include="Controllers\DataUploadController.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\MessageRecordCollectionExtensions.cs" />
@@ -150,6 +152,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\MessageIntervalCounts.cs" />
     <Compile Include="Models\WordCloudModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

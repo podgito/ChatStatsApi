@@ -1,8 +1,7 @@
-﻿using Pojito.Azure.Storage.Table;
-using System;
+﻿using ChatStatsApi.Models;
+using Pojito.Azure.Storage.Table;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace ChatStatsApi.AzureStorage
 {
@@ -15,10 +14,15 @@ namespace ChatStatsApi.AzureStorage
             this.storageFactory = storageFactory;
         }
 
-
-        public IEnumerable<string> GetMessagesContainingWord(string word)
+        public IEnumerable<MessageEntryTableEntity> GetMessagesContainingWord(string word)
         {
-            throw new NotImplementedException();
+            var messageClient = storageFactory.CreateTableStorageClient<MessageEntryTableEntity>(MessageEntryTableEntity.MessageTableName);
+
+            var allMessages = messageClient.GetAll();
+
+            //Perhaps look for the word string as a word with spaces either side?????
+
+            return allMessages.Where(m => m.Message.Contains(word));
         }
     }
 }

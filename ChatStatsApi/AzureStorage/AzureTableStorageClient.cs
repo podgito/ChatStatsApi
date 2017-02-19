@@ -46,21 +46,15 @@ namespace Pojito.Azure.Storage.Table
             EntityResolver<string> resolver = (pk, rk, ts, props, etag) => props.ContainsKey("Message") ? props["Message"].StringValue : null;
 
             return table.ExecuteQuery(projectionQuery, resolver, null, null);
-
         }
 
-        public IEnumerable<T> GetMessagesContaining(string messagePart)
+        public IEnumerable<T> GetAll()
         {
-            TableQuery<T> rangeQuery = new TableQuery<T>().Where(
-    TableQuery.CombineFilters(
-        TableQuery.GenerateFilterCondition("Message", QueryComparisons., "Smith"),
-        TableOperators.And,
-        TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.LessThan, "E")));
+            TableQuery<T> query = new TableQuery<T>();
+            var table = GetTable();
 
-            return Enumerable.Empty<T>();
+            return table.ExecuteQuery<T>(query);
         }
-
-
 
         public T Get(string partitionKey, string rowKey)
         {
@@ -97,15 +91,10 @@ namespace Pojito.Azure.Storage.Table
                     }
                     catch (Exception e)
                     {
-
                         throw;
                     }
                 }
-
-
-
             }
-
 
             // Execute the batch operation.
         }
@@ -135,7 +124,6 @@ namespace Pojito.Azure.Storage.Table
                     }
                     catch (Exception e)
                     {
-
                         throw;
                     }
                 }
@@ -155,7 +143,6 @@ namespace Pojito.Azure.Storage.Table
             }
             catch (Exception e)
             {
-
                 throw;
             }
         }
@@ -175,8 +162,6 @@ namespace Pojito.Azure.Storage.Table
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
 
             return new TableStorageClient<T>(storageAccount, tableName);
-
         }
-
     }
 }
