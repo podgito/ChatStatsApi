@@ -49,6 +49,17 @@ namespace Pojito.Azure.Storage.Table
 
         }
 
+        public IEnumerable<T> GetMessagesContaining(string messagePart)
+        {
+            TableQuery<T> rangeQuery = new TableQuery<T>().Where(
+    TableQuery.CombineFilters(
+        TableQuery.GenerateFilterCondition("Message", QueryComparisons., "Smith"),
+        TableOperators.And,
+        TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.LessThan, "E")));
+
+            return Enumerable.Empty<T>();
+        }
+
 
 
         public T Get(string partitionKey, string rowKey)
