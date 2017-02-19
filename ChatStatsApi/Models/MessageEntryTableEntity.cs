@@ -9,6 +9,9 @@ namespace ChatStatsApi.Models
     public class MessageEntryTableEntity : TableEntity
     {
 
+        public const string OtherMessageTypesTableName = "OtherMessages";
+        public const string MessageTableName = "RegularMessages";
+
         public string Sender { get; set; }
         public Int64 UnixTime { get; set; }
         public string Message { get; set; }

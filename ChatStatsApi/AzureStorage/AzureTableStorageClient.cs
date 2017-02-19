@@ -35,6 +35,22 @@ namespace Pojito.Azure.Storage.Table
             return table.ExecuteQuery<T>(query);
         }
 
+        public IEnumerable<string> GetMessages()
+        {
+            var table = GetTable();
+
+            // Define the query, and select only the Email property.
+            TableQuery<DynamicTableEntity> projectionQuery = new TableQuery<DynamicTableEntity>().Select(new string[] { "Message" });
+
+            // Define an entity resolver to work with the entity after retrieval.
+            EntityResolver<string> resolver = (pk, rk, ts, props, etag) => props.ContainsKey("Message") ? props["Message"].StringValue : null;
+
+            return table.ExecuteQuery(projectionQuery, resolver, null, null);
+
+        }
+
+
+
         public T Get(string partitionKey, string rowKey)
         {
             var table = GetTable();
