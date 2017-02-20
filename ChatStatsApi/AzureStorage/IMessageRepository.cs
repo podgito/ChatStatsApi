@@ -12,5 +12,9 @@ namespace ChatStatsApi.AzureStorage
 
         IEnumerable<MessageEntryTableEntity> GetMessagesContainingWord(string word);
 
+        IEnumerable<string> DistinctWords();
+
+        IEnumerable<string> GetAllWords();
+
     }
 }

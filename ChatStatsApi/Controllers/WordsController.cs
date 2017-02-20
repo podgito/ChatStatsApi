@@ -19,13 +19,25 @@ namespace ChatStatsApi.Controllers
         }
 
         [Route("{word}/count/monthly")]
-        public IEnumerable<MessageIntervalCounts> GetMonthlyCountsForWord(string word)
+        public IEnumerable<object> GetMonthlyCountsForWord(string word)
         {
             var wordMessages = messageRepository.GetMessagesContainingWord(word);
 
             var groupedMessages = wordMessages.GroupByMonth();
 
-            return groupedMessages.Select(c => new MessageIntervalCounts { Date = c.Key, Count = c.Count() });
+            var monthlyCounts = groupedMessages.Select(c => new MessageIntervalCounts { Date = c.Key, Count = c.Count() });
+
+            return monthlyCounts.Select(c => new { x = c.Date.ToJsUtcDateMilliseconds(), c.Count });
+        }
+
+
+        public IEnumerable<object> GetWordCounts()
+        {
+            var distinctWords = messageRepository.GetAllWords();
+
+            var wordCounts = distinctWords.GroupBy(c => c).Select(g=> new { x = g.Key, y = g.Count() });
+
+            return wordCounts;
         }
 
         //Wordcloud
