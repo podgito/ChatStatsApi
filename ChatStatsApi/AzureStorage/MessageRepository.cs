@@ -56,5 +56,10 @@ namespace ChatStatsApi.AzureStorage
 
             return allMessages.Where(m => m.Message.ToUpper().Contains(word.ToUpper()));
         }
+
+        public void Insert(IEnumerable<MessageEntryTableEntity> messages)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

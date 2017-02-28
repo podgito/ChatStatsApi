@@ -37,7 +37,7 @@ namespace ChatStatsApi.Controllers
 
             var wordCounts = distinctWords.GroupBy(c => c).Select(g=> new { x = g.Key, y = g.Count() });
 
-            return wordCounts;
+            return wordCounts.OrderByDescending(a=> a.y);
         }
 
         [Route("Hashtags/counts")]
@@ -47,7 +47,7 @@ namespace ChatStatsApi.Controllers
 
             var wordCounts = distinctHashTags.GroupBy(c => c).Select(g => new { x = g.Key, y = g.Count() });
 
-            return wordCounts;
+            return wordCounts.OrderByDescending(a => a.y);
         }
 
         //Wordcloud

@@ -16,5 +16,7 @@ namespace ChatStatsApi.AzureStorage
 
         IEnumerable<string> GetAllWords();
 
+        void Insert(IEnumerable<MessageEntryTableEntity> messages);
+
     }
 }
