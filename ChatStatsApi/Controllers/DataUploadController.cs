@@ -40,7 +40,7 @@ namespace ChatStatsApi.Controllers
                 csvReader.Close();
                 csvReader.Dispose();
 
-                var messagesTableClient = storageFactory.CreateTableStorageClient<MessageEntryTableEntity>("regularmessages");
+                var messagesTableClient = storageFactory.CreateTableStorageClient<MessageEntryTableEntity>(MessageEntryTableEntity.MessageTableName);
 
                 messagesTableClient.InsertOrUpdate(regularMessages.ToArray());
                 //tableStorageClient.Insert(otherMessages.ToArray());
@@ -80,7 +80,7 @@ namespace ChatStatsApi.Controllers
                 csvReader.Dispose();
                 //Do whatever you want with filename and its binaray data.
 
-                var messagesTableClient = storageFactory.CreateTableStorageClient<MessageEntryTableEntity>("RegularMessage");
+                var messagesTableClient = storageFactory.CreateTableStorageClient<MessageEntryTableEntity>(MessageEntryTableEntity.MessageTableName);
 
                 messagesTableClient.InsertOrUpdate(regularMessages.ToArray());
             }

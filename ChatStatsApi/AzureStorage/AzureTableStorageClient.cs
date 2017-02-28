@@ -51,6 +51,7 @@ namespace Pojito.Azure.Storage.Table
         public IEnumerable<T> GetAll()
         {
             TableQuery<T> query = new TableQuery<T>();
+            
             var table = GetTable();
 
             return table.ExecuteQuery<T>(query);

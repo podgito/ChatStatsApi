@@ -30,12 +30,22 @@ namespace ChatStatsApi.Controllers
             return monthlyCounts.Select(c => new { x = c.Date.ToJsUtcDateMilliseconds(), c.Count });
         }
 
-
+        [Route("counts")]
         public IEnumerable<object> GetWordCounts()
         {
             var distinctWords = messageRepository.GetAllWords();
 
             var wordCounts = distinctWords.GroupBy(c => c).Select(g=> new { x = g.Key, y = g.Count() });
+
+            return wordCounts;
+        }
+
+        [Route("Hashtags/counts")]
+        public IEnumerable<object> GetHashTagCounts()
+        {
+            var distinctHashTags = messageRepository.GetAllWords().Where(w=> w.StartsWith("#"));
+
+            var wordCounts = distinctHashTags.GroupBy(c => c).Select(g => new { x = g.Key, y = g.Count() });
 
             return wordCounts;
         }
