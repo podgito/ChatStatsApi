@@ -51,7 +51,7 @@ namespace Pojito.Azure.Storage.Table
         public IEnumerable<T> GetAll()
         {
             TableQuery<T> query = new TableQuery<T>();
-            
+
             var table = GetTable();
 
             return table.ExecuteQuery<T>(query);
@@ -117,11 +117,11 @@ namespace Pojito.Azure.Storage.Table
                     foreach (var item in partition.Skip(count).Take(100))
                     {
                         batchOperation.InsertOrMerge(item);
-                        count += 100;
                     }
                     try
                     {
                         table.ExecuteBatch(batchOperation);
+                        count += 100;
                     }
                     catch (Exception e)
                     {

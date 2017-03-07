@@ -145,6 +145,7 @@
     <Compile Include="AzureStorage\IMessageRepository.cs" />
     <Compile Include="AzureStorage\MessageRepository.cs" />
     <Compile Include="Controllers\DataUploadController.cs" />
+    <Compile Include="Data\WordsDataRepository.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\MessageRecordCollectionExtensions.cs" />
     <Compile Include="Models\MessageEntryTableEntity.cs" />
@@ -158,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <EmbeddedResource Include="Data\WordsData.json" />
     <None Include="Properties\PublishProfiles\ChatStatsApi - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

@@ -34,7 +34,7 @@ namespace ChatStatsApi.AzureStorage
         {
             var words = new List<string>();
             var messageClient = storageFactory.CreateTableStorageClient<MessageEntryTableEntity>(MessageEntryTableEntity.MessageTableName);
-            var allMessages = messageClient.GetAll().Select(m => m.Message);
+            var allMessages = messageClient.GetAll().Select(m => m.Message.ToUpper());
             
 
             foreach (var message in allMessages)

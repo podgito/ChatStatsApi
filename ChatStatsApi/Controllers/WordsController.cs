@@ -5,6 +5,7 @@ using System.Web.Http;
 using ChatStatsApi.Extensions;
 using System.Collections.Generic;
 using System.Linq;
+using ChatStatsApi.Data;
 
 namespace ChatStatsApi.Controllers
 {
@@ -12,10 +13,12 @@ namespace ChatStatsApi.Controllers
     public class WordsController : ApiController
     {
         private readonly IMessageRepository messageRepository;
+        private readonly WordsDataRepository wordsDataRepo;
 
-        public WordsController(IMessageRepository messageRepository)
+        public WordsController(IMessageRepository messageRepository, WordsDataRepository wordsDataRepo)
         {
             this.messageRepository = messageRepository;
+            this.wordsDataRepo = wordsDataRepo;
         }
 
         [Route("{word}/count/monthly")]
@@ -33,21 +36,22 @@ namespace ChatStatsApi.Controllers
         [Route("counts")]
         public IEnumerable<object> GetWordCounts()
         {
-            var distinctWords = messageRepository.GetAllWords();
+            var distinctWords = messageRepository.GetAllWords().Where(w => !wordsDataRepo.GetInsignificantWords().Contains(w));
 
-            var wordCounts = distinctWords.GroupBy(c => c).Select(g=> new { x = g.Key, y = g.Count() });
+            var wordCounts = distinctWords.GroupBy(c => c).Select(g => new { Word = g.Key, Count = g.Count() });
 
-            return wordCounts.OrderByDescending(a=> a.y);
+            return wordCounts.OrderByDescending(a => a.Count).Take(100);
         }
+
 
         [Route("Hashtags/counts")]
         public IEnumerable<object> GetHashTagCounts()
         {
-            var distinctHashTags = messageRepository.GetAllWords().Where(w=> w.StartsWith("#"));
+            var distinctHashTags = messageRepository.GetAllWords().Where(w => w.StartsWith("#"));
 
-            var wordCounts = distinctHashTags.GroupBy(c => c).Select(g => new { x = g.Key, y = g.Count() });
+            var wordCounts = distinctHashTags.GroupBy(c => c).Select(g => new { Word = g.Key, Count = g.Count() });
 
-            return wordCounts.OrderByDescending(a => a.y);
+            return wordCounts.OrderByDescending(a => a.Count);
         }
 
         //Wordcloud
